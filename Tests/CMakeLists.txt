@@ -228,6 +228,10 @@ if(Python3_Interpreter_FOUND)
     add_test(NAME RendererQuitTest
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gui/run_renderer_quit_test.py $<TARGET_FILE:NatronRenderer>)
     set_tests_properties(RendererQuitTest PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 660)
+    # Processes that save at the same time do not share their temporary file
+    add_test(NAME ConcurrentSaveTest
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gui/run_concurrent_save_test.py $<TARGET_FILE:NatronRenderer>)
+    set_tests_properties(ConcurrentSaveTest PROPERTIES TIMEOUT 600)
 endif()
 
 # Not part of a normal install. The installer scripts install it separately

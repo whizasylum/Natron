@@ -987,6 +987,17 @@ Project::saveProjectInternal(const QString & path,
     QString tmpFilename = StandardPaths::writableLocation(StandardPaths::eStandardLocationTemp);
     StrUtils::ensureLastPathSeparator(tmpFilename);
     tmpFilename.append( QString::number( time.toMSecsSinceEpoch() ) );
+    // The time alone is not unique: two processes (parallel renders of a farm, two sessions) or two
+    // projects of this process that saved in the same millisecond wrote to the same temporary file,
+    // so that a project was saved with the content of another one, or its save failed and left an
+    // empty project file.
+    {
+        static QAtomicInt saveCounter;
+        tmpFilename.append( QLatin1Char('_') );
+        tmpFilename.append( QString::number( (qint64)QCoreApplication::applicationPid() ) );
+        tmpFilename.append( QLatin1Char('_') );
+        tmpFilename.append( QString::number( saveCounter.fetchAndAddRelaxed(1) ) );
+    }
 
     // Auto-saves are always binary (faster, smaller); they record the format of the project.
     // The format is an argument, not set on the project before the save: this save may wait for a running
