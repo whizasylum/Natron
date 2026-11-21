@@ -252,6 +252,10 @@ if(Python3_Interpreter_FOUND)
     add_test(NAME RenderFailureStatusTest
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gui/run_render_failure_status_test.py $<TARGET_FILE:NatronRenderer>)
     set_tests_properties(RenderFailureStatusTest PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 660)
+    # NatronRenderer -t exits at the end of a stdin that is not a console (the null device, a pipe)
+    add_test(NAME InterpreterStdinEofTest
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/gui/run_interpreter_stdin_eof_test.py $<TARGET_FILE:NatronRenderer>)
+    set_tests_properties(InterpreterStdinEofTest PROPERTIES TIMEOUT 300)
 endif()
 
 # Not part of a normal install. The installer scripts install it separately
