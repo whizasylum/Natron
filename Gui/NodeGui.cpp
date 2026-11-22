@@ -27,6 +27,7 @@
 
 #include <cassert>
 #include <algorithm> // min, max
+#include <cmath> // ceil
 #include <stdexcept>
 
 CLANG_DIAG_OFF(deprecated)
@@ -902,11 +903,18 @@ NodeGui::isNearbyResizeHandle(const QPointF& pos) const
 }
 
 void
-NodeGui::adjustSizeToContent(int* /*w*/,
+NodeGui::adjustSizeToContent(int *w,
                              int *h,
                              bool adjustToTextSize)
 {
     QRectF labelBbox = _nameItem->boundingRect();
+
+    // The node is at least as wide as its name and label, so that long names are not clipped.
+    // Backdrops (which frame their name) keep the width the user gave them.
+    if ( !mustFrameName() ) {
+        const int textWidth = (int)std::ceil( labelBbox.width() ) + getPluginIconWidth() + TO_DPIX(6);
+        *w = std::max(*w, textWidth);
+    }
 
     if (adjustToTextSize) {
         if ( _previewPixmap && _previewPixmap->isVisible() ) {
@@ -1011,7 +1019,14 @@ NodeGui::resize(int width,
 
     QRectF bbox(topLeft.x(), topLeft.y(), width, height);
 
+    // When the name makes the node wider or narrower, keep it centred where it was: the wires stay straight.
+    const double oldWidth = _boundingBox->rect().width();
+    const bool widthChanged = !mustFrameName() && oldWidth > 0 && oldWidth != width;
+
     _boundingBox->setRect(bbox);
+    if (widthChanged) {
+        setPos( pos() + QPointF( (oldWidth - width) / 2., 0. ) );
+    }
 
     int iconSize = TO_DPIY(NATRON_PLUGIN_ICON_SIZE);
     int iconOffsetX = TO_DPIX(PLUGIN_ICON_OFFSET);
