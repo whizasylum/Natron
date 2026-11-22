@@ -1031,6 +1031,8 @@ GuiApplicationManager::onPluginLoaded(Plugin* plugin)
         symbol = Qt::Key_B;
     } else if ( pluginID == QString::fromUtf8(PLUGINID_NATRON_DOT) ) {
         symbol = Qt::Key_Period;
+    } else if ( pluginID == QString::fromUtf8(PLUGINID_OFX_SHUFFLE) ) {
+        symbol = Qt::Key_K; // the channel-copy node, as K in other compositing software
     }
 #ifdef NATRON_ENABLE_IO_META_NODES
     else if ( pluginID == QString::fromUtf8(PLUGINID_NATRON_READ) ) {
