@@ -626,7 +626,8 @@ NodeGui::createGui()
     if (!node) {
         return; // throw exception instead?
     }
-    int cornerRadiusPx = 0;
+    // Rounded node bodies. Backdrops stay square: their title frame and resize handle are square too.
+    int cornerRadiusPx = dynamic_cast<BackdropGui*>(this) ? 0 : TO_DPIX(4);
     _boundingBox = new NodeGraphRectItem(this, cornerRadiusPx);
     _boundingBox->setZValue(depth);
 
